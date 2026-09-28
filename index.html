@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    body {
+      background-color: #1a0b2e;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: #b3a4d0;
+      margin-bottom: 24px;
+    }
+    .card {
+      background-color: #261642;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    .mode-toggle {
+      display: inline-flex;
+      background-color: #1a0b2e;
+      border-radius: 20px;
+      padding: 4px;
+      margin-bottom: 16px;
+    }
+    .mode-btn {
+      border: none;
+      background: transparent;
+      color: #b3a4d0;
+      padding: 6px 14px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .mode-btn.active {
+      background-color: #ffd15c;
+      color: #1a0b2e;
+    }
+    .status-turn {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .score-board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .score-box {
+      background-color: #352157;
+      border-radius: 10px;
+      padding: 10px 4px;
+    }
+    .score-title {
+      font-size: 0.75rem;
+      color: #b3a4d0;
+      margin-bottom: 4px;
+    }
+    .score-value {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .cell {
+      aspect-ratio: 1;
+      background-color: #352157;
+      border: none;
+      border-radius: 12px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: background-color 0.2s ease;
+    }
+    .cell:hover {
+      background-color: #422a6c;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+    }
+    .btn:hover {
+      opacity: 0.9;
+    }
+    .btn-primary {
+      background-color: #8b5cf6;
+      color: #ffffff;
+    }
+    .btn-secondary {
+      background-color: #352157;
+      color: #b3a4d0;
+    }
+    .footer-note {
+      font-size: 0.75rem;
+      color: #8a7aa7;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tic Tac Toe</h1>
+    <p class="subtitle">a little college project, a lot of fun 🎉</p>
+    <div class="card">
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="btn-2player">👫 2 Players</button>
+        <button class="mode-btn" id="btn-vs-computer">🤖 vs Computer</button>
+      </div>
+      <div class="status-turn">
+        Turn: <span id="current-player">X</span>
+      </div>
+      <div class="score-board">
+        <div class="score-box">
+          <div class="score-title">X wins</div>
+          <div class="score-value" id="score-x">0</div>
+        </div>
+        <div class="score-box">
+          <div class="score-title">Draws</div>
+          <div class="score-value" id="score-draws">0</div>
+        </div>
+        <div class="score-box">
+          <div class="score-title">O wins</div>
+          <div class="score-value" id="score-o">0</div>
+        </div>
+      </div>
+      <div class="grid" id="board">
+        <button class="cell" data-index="0"></button>
+        <button class="cell" data-index="1"></button>
+        <button class="cell" data-index="2"></button>
+        <button class="cell" data-index="3"></button>
+        <button class="cell" data-index="4"></button>
+        <button class="cell" data-index="5"></button>
+        <button class="cell" data-index="6"></button>
+        <button class="cell" data-index="7"></button>
+        <button class="cell" data-index="8"></button>
+      </div>
+      <div class="controls">
+        <button class="btn btn-primary" id="btn-new-round">🔄 New Round</button>
+        <button class="btn btn-secondary" id="btn-reset-scores">🗑️ Reset Scores</button>
+      </div>
+      <div class="footer-note">
+        Made for a college MIT App Inventor project • have fun 🙂
+      </div>
+    </div>
+  </div>
+  <script>
+    let boardState = ['', '', '', '', '', '', '', '', ''];
+    let currentPlayer = 'X';
+    let isGameActive = true;
+    let vsComputer = false;
+    let scores = { x: 0, o: 0, draws: 0 };
+    const winConditions = [
+      [0, 1, 2], [3, 4, 5], [6, 7, 8],
+      [0, 3, 6], [1, 4, 7], [2, 5, 8],
+      [0, 4, 8], [2, 4, 6]
+    ];
+    const cells = document.querySelectorAll('.cell');
+    const turnDisplay = document.getElementById('current-player');
+    const scoreXEl = document.getElementById('score-x');
+    const scoreOEl = document.getElementById('score-o');
+    const scoreDrawsEl = document.getElementById('score-draws');
+    const btn2Player = document.getElementById('btn-2player');
+    const btnVsComputer = document.getElementById('btn-vs-computer');
+    const btnNewRound = document.getElementById('btn-new-round');
+    const btnResetScores = document.getElementById('btn-reset-scores');
+    cells.forEach(cell => cell.addEventListener('click', handleCellClick));
+    btnNewRound.addEventListener('click', resetBoard);
+    btnResetScores.addEventListener('click', resetScores);
+    btn2Player.addEventListener('click', () => {
+      vsComputer = false;
+      btn2Player.classList.add('active');
+      btnVsComputer.classList.remove('active');
+      resetBoard();
+    });
+    btnVsComputer.addEventListener('click', () => {
+      vsComputer = true;
+      btnVsComputer.classList.add('active');
+      btn2Player.classList.remove('active');
+      resetBoard();
+    });
+    function handleCellClick(e) {
+      const index = e.target.getAttribute('data-index');
+      if (boardState[index] !== '' || !isGameActive) return;
+      makeMove(index, currentPlayer);
+      if (isGameActive && vsComputer && currentPlayer === 'O') {
+        setTimeout(computerMove, 300);
+      }
+    }
+    function makeMove(index, player) {
+      boardState[index] = player;
+      cells[index].textContent = player;
+      if (checkWin(player)) {
+        scores[player.toLowerCase()]++;
+        updateScores();
+        turnDisplay.textContent = `${player} Wins!`;
+        isGameActive = false;
+        return;
+      }
+      if (boardState.every(cell => cell !== '')) {
+        scores.draws++;
+        updateScores();
+        turnDisplay.textContent = 'Draw!';
+        isGameActive = false;
+        return;
+      }
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+      turnDisplay.textContent = currentPlayer;
+    }
+    function computerMove() {
+      const emptyIndices = boardState
+        .map((val, idx) => val === '' ? idx : null)
+        .filter(val => val !== null);
+      if (emptyIndices.length > 0 && isGameActive) {
+        const randomIndex = emptyIndices[Math.floor(Math.random() * emptyIndices.length)];
+        makeMove(randomIndex, 'O');
+      }
+    }
+    function checkWin(player) {
+      return winConditions.some(condition => {
+        return condition.every(index => boardState[index] === player);
+      });
+    }
+    function updateScores() {
+      scoreXEl.textContent = scores.x;
+      scoreOEl.textContent = scores.o;
+      scoreDrawsEl.textContent = scores.draws;
+    }
+    function resetBoard() {
+      boardState = ['', '', '', '', '', '', '', '', ''];
+      isGameActive = true;
+      currentPlayer = 'X';
+      turnDisplay.textContent = currentPlayer;
+      cells.forEach(cell => cell.textContent = '');
+    }
+    function resetScores() {
+      scores = { x: 0, o: 0, draws: 0 };
+      updateScores();
+      resetBoard();
+    }
+  </script>
+</body>
+</html>
